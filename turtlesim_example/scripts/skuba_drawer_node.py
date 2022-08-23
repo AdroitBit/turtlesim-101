@@ -107,7 +107,7 @@ class SkubaDrawerNode:
         self.draw_path(points)
 
     def draw_christmas_tree(self,bcx,bcy,tree_w,tree_h):
-        #christmas tree trunk
+        #trunk
         points=[
             [bcx-tree_w*0.2/2,bcy],
             [bcx+tree_w*0.2/2,bcy],
@@ -115,7 +115,7 @@ class SkubaDrawerNode:
             [bcx-tree_w*0.2/2,bcy+tree_h*0.2],
         ]
         self.draw_path(points)
-        #christmas tree leaves1
+        #leaves1
         points=[
             [bcx-tree_w/2,bcy+tree_h*0.2],
             [bcx+tree_w/2,bcy+tree_h*0.2],
@@ -123,7 +123,7 @@ class SkubaDrawerNode:
             [bcx-tree_w*0.6/2,bcy+tree_h*(0.2+0.2)],
         ]
         self.draw_path(points)
-        #christmas tree leaves2
+        #leaves2
         points=[
             [bcx-tree_w*0.8/2,bcy+tree_h*(0.2+0.2)],
             [bcx+tree_w*0.8/2,bcy+tree_h*(0.2+0.2)],
@@ -131,18 +131,28 @@ class SkubaDrawerNode:
             [bcx-tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
         ]
         self.draw_path(points)
-        #christmas tree leaves3
+        #leaves3
         points=[
             [bcx+tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
             [bcx-tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
             [bcx,bcy+tree_h*(0.2+0.2+0.2+0.3)],
         ]
         self.draw_path(points)
-        #christmas tree star
+        #star
         #star have 10 vertices,even then short dis,odd then long dis
         #it can have phase
+        points=[]
+        phase=360//10
+        r_in=0.2*tree_w
+        r_out=0.3*tree_w
+        x,y=[bcx,bcy+tree_h*(0.2+0.2+0.2+0.3)]
+        for i,ang in enumerate(range(0,360,360//10)):
+            r=r_out if i%2==0 else r_in
+            rad=(ang+phase/2)/180*math.pi
+            points.append([x+r*math.cos(rad), y+r*math.sin(rad)])
+        self.draw_path(points)
 
-        #christmas tree BALL and STICK
+        #BALL and STICK
         pass
     def draw(self):
         self.draw_circle(100,100,100);
