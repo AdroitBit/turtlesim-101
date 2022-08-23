@@ -3,6 +3,7 @@
 #rosservice call /clear "{}"
 #rosservice call /reset "{}"
 #turtlesim world is around 0-100
+from transformers import ALBERT_PRETRAINED_MODEL_ARCHIVE_LIST
 import rospy
 from turtlesim.srv import *
 from geometry_msgs.msg import Twist
@@ -58,6 +59,15 @@ class SkubaDrawerNode:
     def walk_to(self,x,y,absolute=True):#no pen setting for teleporting
 
         pass
+    def draw_path(self,points):
+        self.set_pen(switch_on=False)
+        #sol1 : teleport continuously
+        points+=[points[0]]
+        for x,y in points:
+            self.teleport(x,y,0)
+            self.set_pen(switch_on=True)
+
+        self.set_pen(switch_on=False)
     def draw_circle(self,x,y,r):
         self.set_pen(switch_on=False)
         
@@ -79,33 +89,60 @@ class SkubaDrawerNode:
         
 
         pass
-    def draw_rectangle(self,cx,cy,w,h):
-        self.set_pen(switch_on=False)
+    def draw_rectangle(self,bcx,bcy,w,h):
         points=[
-            [cx-w/2,cy+h/2],
-            [cx+w/2,cy+h/2],
-            [cx+w/2,cy-h/2],
-            [cx-w/2,cy-h/2],
-            [cx-w/2,cy+h/2]
+            [bcx-w/2,bcy],#left of base
+            [bcx+w/2,bcy],#right of base
+            [bcx+w/2,bcy+h],#right of top
+            [bcx-w/2,bcy+h],#left of top
         ]
-        for xi,yi in points:
-            self.teleport(xi,yi)
-            self.set_pen(switch_on=True)
+        self.draw_path(points)
 
     def draw_triangle(self,bcx,bcy,bw,bh):
-        self.set_pen(switch_on=False)
         points=[
-            [bcx-bw/2,bcy+bh/2],
-            [bcx+bw/2,bcy+bh/2],
-            [bcx,bcy-bh/2],
-            [bcx-bw/2,bcy+bh/2]
+            [bcx-bw/2,bcy],#left of base
+            [bcx+bw/2,bcy],#right of base
+            [bcx,bcy+bh],#top
         ]
-        for xi,yi in points:
-            self.teleport(xi,yi)
-            self.set_pen(switch_on=True)
-        pass
+        self.draw_path(points)
 
-    def draw_christmas_tree(self):
+    def draw_christmas_tree(self,bcx,bcy,tree_w,tree_h):
+        #christmas tree trunk
+        points=[
+            [bcx-tree_w*0.2/2,bcy],
+            [bcx+tree_w*0.2/2,bcy],
+            [bcx+tree_w*0.2/2,bcy+tree_h*0.2],
+            [bcx-tree_w*0.2/2,bcy+tree_h*0.2],
+        ]
+        self.draw_path(points)
+        #christmas tree leaves1
+        points=[
+            [bcx-tree_w/2,bcy+tree_h*0.2],
+            [bcx+tree_w/2,bcy+tree_h*0.2],
+            [bcx+tree_w*0.6/2,bcy+tree_h*(0.2+0.2)],
+            [bcx-tree_w*0.6/2,bcy+tree_h*(0.2+0.2)],
+        ]
+        self.draw_path(points)
+        #christmas tree leaves2
+        points=[
+            [bcx-tree_w*0.8/2,bcy+tree_h*(0.2+0.2)],
+            [bcx+tree_w*0.8/2,bcy+tree_h*(0.2+0.2)],
+            [bcx+tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
+            [bcx-tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
+        ]
+        self.draw_path(points)
+        #christmas tree leaves3
+        points=[
+            [bcx+tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
+            [bcx-tree_w*0.4/2,bcy+tree_h*(0.2+0.2+0.2)],
+            [bcx,bcy+tree_h*(0.2+0.2+0.2+0.3)],
+        ]
+        self.draw_path(points)
+        #christmas tree star
+        #star have 10 vertices,even then short dis,odd then long dis
+        #it can have phase
+
+        #christmas tree BALL and STICK
         pass
     def draw(self):
         self.draw_circle(100,100,100);
@@ -118,8 +155,10 @@ if __name__=='__main__':
 
     #node.set_pen(switch_on=False)
     #node.teleport(50,50,0)
-    node.draw_circle(50,50,20);
-    node.draw_rectangle(50, 50, 40, 40)
-    node.draw_triangle(50, 50, 40, 40)
+    #node.draw_circle(50,50,20);
+    #node.draw_rectangle(50, 50, 40, 40)
+    #node.draw_triangle(50, 50, 40, 40)
+    node.draw_christmas_tree(50,0,25,50)
+    
     #node.clear()
     #node.draw_circle(50, 50, 20)
